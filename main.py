@@ -14,13 +14,27 @@ def create_password():
     return password
 
 def insert_password():
-    site = input("Enter site for which you want password to be stored\n").lower()
-    if site not in data.keys():
-        data[site] = create_password()
-        print("Success! Password for site", site, "created. Password is:", data[site])
-    else:
-        print("Site already found, no need for a new password!")
-    json.dump(data, open("passwords.json",'w'))
+    type_of_create = input("Do you want to create a new password manually or automatically? (manual/auto)\n").lower()
+    while type_of_create not in ["manual", "auto"]:
+        print("Please enter a valid input\n")
+        type_of_create = input("Do you want to create a new password manually or automatically? (manual/auto)\n").lower()
+    if type_of_create == "manual":
+        site = input("Enter site for which you want password to be stored\n").lower()
+        if site not in data.keys():
+            data[site] = input("Enter password for site\n")
+            print("Success! Password for site", site, "created. Password is:", data[site])
+        else:
+            print("Site already found, no need for a new password!")
+    elif type_of_create == "auto":
+        site = input("Enter site for which you want password to be stored\n").lower()
+        if site not in data.keys():
+            data[site] = create_password()
+            print("Success! Password for site", site, "created. Password is:", data[site])
+        else:
+            print("Site already found, no need for a new password!")
+    json.dump(data, open("passwords.json",'w'))    
+
+
 
 def return_password():
     site = input("Enter site for which you want password for\n").lower()
@@ -31,30 +45,37 @@ def return_password():
 
 def update_password():
     site = input("Enter site for which you want password to be updated\n").lower()
-    if site in data.keys():
-        data[site] = create_password()
-        print("Success! Password for site", site, "updated. Password is:", data[site])
+    if site not in data.keys():
+        print(f"There is no password stored for {site}")
     else:
-        print("You do not have a password saved for this site!")
+        type_of_update = input("Do you want to update password manually or automatically? (manual/auto)\n").lower()
+        while type_of_update not in ["manual", "auto"]:
+            print("Please enter only manual or auto\n")
+            type_of_update = input("Do you want to update password manually or automatically? (manual/auto)\n").lower()
+        if type_of_update == "manual":
+            data[site] = input(f"Enter new password\n")
+        else:
+            data[site] = create_password()
+        print(f"Succes, password for {site} updated to {data[site]}")
     json.dump(data, open("passwords.json",'w'))
 
 
 action = ' '
-while action != '':
-    action = input("What do you want to do? (create/access)\nEnter nothing to exit\n").lower() # create -> new; access -> old
+while action not in ['', "nothing"]:
+    action = input("What do you want to do? (create/access/update)\nEnter nothing to exit\n").lower() # create -> new; access -> old
     if action == "create":
         insert_password()
-    
+
     elif action == "access":
         return_password()
-    
+
     elif action == 'update':
         update_password()
-        
-    elif action == '':
+
+    elif action in ['', "nothing"]:
         print('quitting')
         quit()
-    
+
     else:
         print("Invalid input")
    
