@@ -5,7 +5,7 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "passwords.js
     data = json.load(f)
     f.close()
 
-def create_password():
+def create_password(): 
     char_seq = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
     password = ''
     for _ in range(25):
@@ -29,16 +29,29 @@ def return_password():
     else:
         print("You do not have a password saved for this site!")
 
-action = ''
-while action != '-1':
-    action = input("What do you want to do? (create/access)\nEnter -1 to exit\n").lower() # create -> new; access -> old
+def update_password():
+    site = input("Enter site for which you want password to be updated\n").lower()
+    if site in data.keys():
+        data[site] = create_password()
+        print("Success! Password for site", site, "updated. Password is:", data[site])
+    else:
+        print("You do not have a password saved for this site!")
+    json.dump(data, open("passwords.json",'w'))
+
+
+action = ' '
+while action != '':
+    action = input("What do you want to do? (create/access)\nEnter nothing to exit\n").lower() # create -> new; access -> old
     if action == "create":
         insert_password()
     
     elif action == "access":
         return_password()
     
-    elif action == '-1':
+    elif action == 'update':
+        update_password()
+        
+    elif action == '':
         print('quitting')
         quit()
     
