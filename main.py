@@ -2,14 +2,11 @@ import json
 import random
 import os
 
-
-passwords_file = "passwords.json"
-
-if not os.path.isfile(passwords_file):
-    with open(passwords_file, "w") as f:
+if not os.path.isfile("passwords.json"):
+    with open("passwords.json", "w") as f:
         json.dump({}, f)
 
-with open(passwords_file, "r") as f:
+with open("passwords.json", "r") as f:
     data = json.load(f)
 
 
