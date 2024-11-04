@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Manager</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .add-form {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .password-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .password-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 10px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        gap: 10px;
+      }
+
+      .site-name {
+        font-weight: bold;
+        min-width: 120px;
+        color: #2c3e50;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 200px;
+      }
+
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        white-space: nowrap;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      .button-secondary {
+        background: #6c757d;
+      }
+
+      .button-secondary:hover {
+        background: #545b62;
+      }
+
+      .flash-messages {
+        margin-bottom: 20px;
+      }
+
+      .flash {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+      }
+
+      .flash.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .flash.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .no-passwords {
+        text-align: center;
+        padding: 20px;
+        color: #6c757d;
+        font-style: italic;
+      }
+
+      .copy-btn {
+        background: #28a745;
+      }
+
+      .copy-btn:hover {
+        background: #218838;
+      }
+
+      .show-btn {
+        background: #17a2b8;
+      }
+
+      .show-btn:hover {
+        background: #138496;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Password Manager</h1>
+
+      <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %} {% for
+        category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %} {% endwith %}
+      </div>
+
+      <div class="add-form">
+        <h2>Add New Password</h2>
+        <form action="{{ url_for('add_password') }}" method="POST">
+          <div class="form-group">
+            <input type="text" name="site" placeholder="Site name" required />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password (optional)"
+            />
+            <button
+              type="button"
+              onclick="generatePassword(this.form.password)"
+            >
+              Generate
+            </button>
+            <button type="submit">Add Password</button>
+          </div>
+        </form>
+      </div>
+
+      <h2>Stored Passwords</h2>
+      <div class="password-list">
+        {% if sites %} {% for site, password in sites %}
+        <div class="password-item">
+          <span class="site-name">{{ site }}</span>
+          <input type="password" value="{{ password }}" readonly />
+          <button class="show-btn" onclick="togglePassword(this)">Show</button>
+          <button class="copy-btn" data-clipboard-text="{{ password }}">
+            Copy
+          </button>
+          <form
+            action="{{ url_for('update_password', site=site) }}"
+            method="POST"
+            style="display: inline"
+          >
+            <input type="hidden" name="generate" value="true" />
+            <button type="submit" class="button-secondary">Generate New</button>
+          </form>
+        </div>
+        {% endfor %} {% else %}
+        <div class="no-passwords">No passwords stored yet. Add one above!</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <script>
+      // Initialize clipboard.js
+      const clipboard = new ClipboardJS(".copy-btn");
+
+      clipboard.on("success", function (e) {
+        const originalText = e.trigger.textContent;
+        e.trigger.textContent = "Copied!";
+        setTimeout(() => {
+          e.trigger.textContent = originalText;
+        }, 1500);
+      });
+
+      function togglePassword(button) {
+        const input = button.previousElementSibling;
+        if (input.type === "password") {
+          input.type = "text";
+          button.textContent = "Hide";
+        } else {
+          input.type = "password";
+          button.textContent = "Show";
+        }
+      }
+
+      function generatePassword(inputField) {
+        fetch("/generate")
+          .then((response) => response.json())
+          .then((data) => {
+            inputField.value = data.password;
+            inputField.type = "text";
+          })
+          .catch((error) => console.error("Error generating password:", error));
+      }
+
+      // Auto-hide flash messages after 5 seconds
+      setTimeout(() => {
+        const flashMessages = document.querySelector(".flash-messages");
+        if (flashMessages) {
+          flashMessages.style.display = "none";
+        }
+      }, 5000);
+    </script>
+  </body>
+</html>
