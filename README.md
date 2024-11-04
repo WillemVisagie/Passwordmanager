@@ -1,4 +1,4 @@
-# Local Password Manager
+# Password Manager
 
 A simple, secure password manager with both CLI and web interfaces. This application allows you to store and manage passwords locally with features for generating secure random passwords.
 
@@ -25,8 +25,8 @@ A simple, secure password manager with both CLI and web interfaces. This applica
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/password-manager.git
-cd password-manager
+git clone https://github.com/yourusername/Passwordmanager.git
+cd Passwordmanager
 ```
 
 2. Install required packages:
@@ -58,7 +58,6 @@ The web interface provides the following features:
 - Copy passwords to clipboard
 - Show/hide password visibility
 - Generate new passwords for existing entries
-- User-friendly notifications
 
 ### Command Line Interface
 
@@ -81,7 +80,6 @@ Available commands:
 password-manager/
 ├── app.py              # Flask web application
 ├── password_manager.py # Core password management logic
-├── passwords.json      # Password storage file
 └── templates/
     └── index.html     # Web interface template
 ```
