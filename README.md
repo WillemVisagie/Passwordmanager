@@ -12,7 +12,6 @@ A simple, secure password manager with both CLI and web interfaces. This applica
 - Show/hide password visibility
 - Flash notifications for user feedback
 - Generate new passwords for existing entries
-- Mobile-friendly design
 
 ## Prerequisites
 
