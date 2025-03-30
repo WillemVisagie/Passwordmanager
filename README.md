@@ -24,7 +24,7 @@ A simple, secure password manager with both CLI and web interfaces. This applica
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/Passwordmanager.git
+git clone https://github.com/WillemVisagie/Passwordmanager.git
 cd Passwordmanager
 ```
 
